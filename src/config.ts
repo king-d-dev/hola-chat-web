@@ -1,0 +1,4 @@
+const AUTH0_DOMAIN_NAME = process.env.AUTH0_DOMAIN_NAME!;
+const AUTH0_CLIENT_ID = process.env.AUTH0_CLIENT_ID!;
+
+export { AUTH0_DOMAIN_NAME, AUTH0_CLIENT_ID };
