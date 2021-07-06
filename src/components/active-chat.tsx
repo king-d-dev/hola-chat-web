@@ -32,7 +32,7 @@ function ActiveChat() {
         <input
           className="w-full text-xs rounded-2xl py-2 px-4 mr-2"
           type="text"
-          placeholder="start typing here..."
+          placeholder="start your hola here..."
         />
         <img src={sendMessageImg} alt="send message" className="w-6" />
       </div>
