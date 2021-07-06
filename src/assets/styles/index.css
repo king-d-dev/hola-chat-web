@@ -6,3 +6,26 @@
 * {
   font-family: nunito;
 }
+
+.active-chat {
+  background-image: url(../img/pattern-2.jpg);
+  background-position: center;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+input,
+input:focus,
+input:active {
+  outline: none;
+}
+
+.chat-message {
+  width: fit-content;
+  margin-bottom: 8px;
+}
+
+.outgoing-message {
+  align-self: flex-end;
+}

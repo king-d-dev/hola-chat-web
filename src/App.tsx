@@ -1,16 +1,17 @@
+import { useAuth0 } from '@auth0/auth0-react';
 import './assets/styles/index.css';
 import { Loading } from './components/loading';
-import { AuthPage } from './pages/auth';
 import { ChatPage } from './pages/chat';
 import { HomePage } from './pages/home';
 
 function App() {
-  const isLoggedIn = null;
+  const { isAuthenticated, isLoading } = useAuth0();
 
   function renderContent() {
-    if (isLoggedIn) return <ChatPage />;
-    else if (isLoggedIn === false) return <AuthPage />;
-    else if (isLoggedIn === undefined) return <Loading />;
+    return <ChatPage />;
+    if (isLoading) return <Loading />;
+
+    if (isAuthenticated) return <ChatPage />;
     else return <HomePage />;
   }
 
