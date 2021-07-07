@@ -37,3 +37,8 @@ input:active {
 .list-user.active {
   border-left: 2px solid #1f2937;
 }
+
+/* .messages-container {
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+} */

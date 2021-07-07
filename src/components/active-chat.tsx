@@ -22,6 +22,10 @@ function ActiveChatWrapper({ selectedUser }: ActiveChatWrapperProps) {
     );
   });
 
+  function blockUser() {
+    socket.emit(SocketEvent.BLOCK_USER, selectedUser);
+  }
+
   function scrollToBottom(elementID: string) {
     setTimeout(() => document.getElementById(elementID)?.scrollIntoView({ behavior: 'smooth' }), 5);
   }
@@ -77,12 +81,22 @@ function ActiveChatWrapper({ selectedUser }: ActiveChatWrapperProps) {
   return (
     <React.Fragment>
       {messages ? (
-        <div className="messages overflow-auto px-4 h-full flex flex-col pb-20 pt-6">
-          {Object.values(messages).map((msg) => (
-            <ChatMessage key={msg.clientId} message={msg} />
-          ))}
+        <div className="messages-container overflow-auto relative w-full h-full">
+          <div className="flex justify-end bg-white p-2 border-r fixed">
+            <button onClick={blockUser} className="bg-red-500 rounded-md px-4 py-1 text-white">
+              Block
+            </button>
+          </div>
 
-          <div id="default-last-item"></div>
+          <div className="h-20"></div>
+
+          <div className="messages px-4 flex flex-col pb-20 pt-6">
+            {Object.values(messages).map((msg) => (
+              <ChatMessage key={msg.clientId} message={msg} />
+            ))}
+
+            <div id="default-last-item"></div>
+          </div>
         </div>
       ) : (
         <div className="h-full flex justify-center items-center">

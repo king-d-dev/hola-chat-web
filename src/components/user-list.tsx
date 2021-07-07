@@ -32,12 +32,15 @@ function ListUserItem({ user }: ListUserProps) {
 function UserList() {
   const auth0Context = useAuth0();
   const user = auth0Context.user!;
-  const { users, addUser, setUsers, removeUser } = useUsers();
+  const { users, addUser, setUsers, removeUser, blacklisters } = useUsers();
 
   useEffect(() => {
     socket.on(SocketEvent.NEW_USER_CONNECTED, function (newUser: User) {
-      // if new connection is from the same user but a different device do not add them to the list
+      // if the new connection is from the same user but a different device do not add them to the list
       if (user.email === newUser.email) return;
+
+      // if the new connection is from someone who has blacklisted this current user, then do not add them to the list of users
+      if (blacklisters.includes(newUser.email)) return;
 
       addUser(newUser);
     });
@@ -45,7 +48,7 @@ function UserList() {
     return () => {
       socket.off(SocketEvent.NEW_USER_CONNECTED);
     };
-  }, [users, addUser, user]);
+  }, [users, addUser, user, blacklisters]);
 
   useEffect(() => {
     socket.on(SocketEvent.USER_DISCONNECTED, function (disconnectedUser) {
