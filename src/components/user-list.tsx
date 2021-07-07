@@ -36,14 +36,17 @@ function UserList() {
   // const [users, setUsers] = useState<User[]>([]);
 
   useEffect(() => {
-    socket.on(SocketEvent.NEW_USER_CONNECTED, function (newUser) {
+    socket.on(SocketEvent.NEW_USER_CONNECTED, function (newUser: User) {
+      // if new connection is from the same user but a different device do not add them to the list
+      if (user.email === newUser.email) return;
+
       addUser(newUser);
     });
 
     return () => {
       socket.off(SocketEvent.NEW_USER_CONNECTED);
     };
-  }, [users, addUser]);
+  }, [users, addUser, user]);
 
   useEffect(() => {
     socket.on(SocketEvent.ACTIVE_USERS, function (activeUsers) {
