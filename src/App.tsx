@@ -16,7 +16,6 @@ function App() {
       const token = await getAccessTokenSilently();
       // setAccessToken(token);
       window.localStorage.setItem('access-token', token);
-      console.log('GETTING ACCESS TOKEN');
     }
     retrieveAccessToken();
 

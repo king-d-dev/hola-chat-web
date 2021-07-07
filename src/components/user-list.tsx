@@ -1,7 +1,7 @@
 import { SocketEvent, User } from '../types';
 import userImage from '../assets/img/profile-user.png';
-import { useSelectedUser } from '../stores/selected-user';
-import { useEffect, useState } from 'react';
+import { useUsers } from '../stores/users';
+import { useEffect } from 'react';
 import socket from '../lib/socket';
 import { useAuth0 } from '@auth0/auth0-react';
 
@@ -10,7 +10,7 @@ type ListUserProps = {
 };
 
 function ListUserItem({ user }: ListUserProps) {
-  const { setSelectedUser } = useSelectedUser();
+  const { setSelectedUser } = useUsers();
 
   return (
     <div
@@ -18,7 +18,7 @@ function ListUserItem({ user }: ListUserProps) {
       className="flex items-center pb-3 mb-3 border-b border-gray-100 cursor-pointer"
     >
       <img src={userImage} alt="user profile" className="w-5 mr-2" />
-      <span className="overflow-ellipsis">{user.email}</span>
+      <span className="overflow-ellipsis overflow-hidden">{user.email}</span>
     </div>
   );
 }
@@ -26,19 +26,28 @@ function ListUserItem({ user }: ListUserProps) {
 function UserList() {
   const auth0Context = useAuth0();
   const user = auth0Context.user!;
-  const [users, setUsers] = useState<User[]>([]);
+  const { users, addUser, setUsers } = useUsers();
+  // const [users, setUsers] = useState<User[]>([]);
+
+  useEffect(() => {
+    socket.on(SocketEvent.NEW_USER_CONNECTED, function (newUser) {
+      addUser(newUser);
+    });
+
+    return () => {
+      socket.off(SocketEvent.NEW_USER_CONNECTED);
+    };
+  }, [users, addUser]);
 
   useEffect(() => {
     socket.on(SocketEvent.ACTIVE_USERS, function (activeUsers) {
       setUsers(activeUsers);
-      console.log('ACTIVE USERS', activeUsers);
     });
-    console.log('TOEKNE', socket.auth);
 
     return () => {
       socket.off(SocketEvent.ACTIVE_USERS);
     };
-  }, []);
+  }, [setUsers]);
 
   return (
     <div className="overflow-auto h-full w-72 border-l ">
@@ -49,7 +58,7 @@ function UserList() {
       </div>
 
       <div className="py-3 px-2">
-        {users.map((user) => (
+        {Object.values(users).map((user) => (
           <ListUserItem key={user.email} user={user} />
         ))}
       </div>

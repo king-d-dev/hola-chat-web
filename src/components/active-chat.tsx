@@ -1,70 +1,116 @@
-import { useEffect, useState } from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
+import React, { useEffect, useRef } from 'react';
+import { nanoid } from 'nanoid';
 import sendMessageImg from '../assets/img/email.png';
 import socket from '../lib/socket';
-import { useSelectedUser } from '../stores/selected-user';
-import { Message, SocketEvent } from '../types';
+import { useMessages } from '../stores/messages';
+import { Message, SocketEvent, User } from '../types';
 import { ChatMessage } from './chat-message';
+import { useUsers } from '../stores/users';
 
-function ActiveChat() {
-  const [messages, setMessages] = useState<Message[] | null>(null);
-  const { selectedUser } = useSelectedUser();
+type ActiveChatWrapperProps = { selectedUser: User };
 
-  console.log('SSS', selectedUser);
+function ActiveChatWrapper({ selectedUser }: ActiveChatWrapperProps) {
+  const textFieldRef = useRef<HTMLInputElement>(null!);
+  const auth0Context = useAuth0();
+  const user = auth0Context.user!;
+  const { all, addMessage, setMessages } = useMessages();
+  const messages = Object.values(all).filter((msg) => {
+    return (
+      (msg.sender === selectedUser.email || msg.sender === user.email!) &&
+      (msg.recipient === selectedUser.email || msg.recipient === user.email!)
+    );
+  });
 
-  function fetchMessageHistory() {
-    socket.emit(SocketEvent.GET_SELECTED_USER_MESSAGES);
+  function sendChat() {
+    const messageToSend: Message = {
+      clientId: nanoid(),
+      text: textFieldRef.current.value,
+      sender: user.email!,
+      recipient: selectedUser!.email,
+      sentAt: new Date(),
+    };
+
+    socket.emit(SocketEvent.MESSAGE, messageToSend, (ack: any) => {
+      console.log('Message has been sent to the socket server', ack);
+    });
+    addMessage(messageToSend);
+
+    textFieldRef.current.value = '';
   }
 
   useEffect(() => {
-    fetchMessageHistory();
-  }, [selectedUser]);
+    console.log('MMM', messages);
+  }, [messages]);
 
   useEffect(() => {
-    socket.on(SocketEvent.GET_SELECTED_USER_MESSAGES, function (data) {
-      console.log('GET SELECTED USER MESSAGES', data);
+    socket.on(SocketEvent.MESSAGE, function (message: Message) {
+      console.log('Incoming message', message);
+      addMessage(message);
     });
 
     return () => {
-      socket.off(SocketEvent.GET_SELECTED_USER_MESSAGES);
+      socket.off(SocketEvent.MESSAGE);
     };
-  }, []);
+  }, [addMessage, selectedUser]);
 
-  function renderContent() {
-    if (messages)
-      return (
-        <div className="px-4 h-full flex flex-col-reverse pb-20">
-          {messages.map((msg) => (
-            <ChatMessage key={Math.random() * Math.random()} message={msg} />
+  useEffect(() => {
+    socket.emit(SocketEvent.SELECTED_USER_MESSAGES, selectedUser);
+
+    socket.on(SocketEvent.SELECTED_USER_MESSAGES, function (data) {
+      console.log('GET SELECTED USER MESSAGES', data);
+      setMessages(data);
+    });
+
+    return () => {
+      socket.off(SocketEvent.SELECTED_USER_MESSAGES);
+    };
+  }, [selectedUser, setMessages]);
+
+  return (
+    <React.Fragment>
+      {messages ? (
+        <div className="overflow-auto px-4 h-full flex flex-col pb-20">
+          {Object.values(messages).map((msg) => (
+            <ChatMessage key={msg.clientId} message={msg} />
           ))}
         </div>
-      );
-    else if (selectedUser === null)
-      return (
-        <div className="h-full flex justify-center items-center">
-          <h4 className="text-white">select a user to start chatting 💬 with.</h4>
-        </div>
-      );
-    else
-      return (
+      ) : (
         <div className="h-full flex justify-center items-center">
           <h4 className="text-white">loading messages...</h4>
         </div>
-      );
-  }
+      )}
+
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          sendChat();
+        }}
+        className="send-message-container absolute bottom-0 p-4 flex w-full justify-between bg-gray-200"
+      >
+        <input
+          ref={textFieldRef}
+          className="w-full text-xs rounded-2xl py-2 px-4 mr-2"
+          type="text"
+          placeholder="start your hola here..."
+        />
+        <img onClick={sendChat} src={sendMessageImg} alt="send message" className="w-6" />
+      </form>
+    </React.Fragment>
+  );
+}
+
+function ActiveChat() {
+  const { selectedUser } = useUsers();
 
   return (
-    <div className="active-chat w-full overflow-auto relative">
-      {renderContent()}
-
-      {selectedUser && (
-        <div className="send-message-container absolute bottom-0 p-4 flex w-full justify-between bg-gray-200">
-          <input
-            className="w-full text-xs rounded-2xl py-2 px-4 mr-2"
-            type="text"
-            placeholder="start your hola here..."
-          />
-          <img src={sendMessageImg} alt="send message" className="w-6" />
+    <div className="active-chat w-full relative">
+      {selectedUser === null ? (
+        <div className="h-full flex justify-center items-center">
+          <h4 className="text-white">select a user to start chatting 💬 with.</h4>
         </div>
+      ) : (
+        <ActiveChatWrapper selectedUser={selectedUser} />
       )}
     </div>
   );

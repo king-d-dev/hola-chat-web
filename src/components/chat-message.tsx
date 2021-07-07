@@ -9,7 +9,8 @@ type ChatMessageProps = {
 function ChatMessage({ message }: ChatMessageProps) {
   const auth0Context = useAuth0();
   const user = auth0Context.user!;
-  const isOutGoingMessage = user.email === message.sender.email;
+  const isOutGoingMessage = user.email === message.sender;
+  console.log('IIII', isOutGoingMessage);
 
   return (
     <div
