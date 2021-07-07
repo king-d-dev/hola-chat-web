@@ -1,16 +1,9 @@
 import { useEffect } from 'react';
-import { useAuth0 } from '@auth0/auth0-react';
 import { ActiveChat } from '../components/active-chat';
 import { UserList } from '../components/user-list';
-import { User } from '../types';
 import socket from '../lib/socket';
 
 function ChatPage() {
-  const auth0Context = useAuth0<User>();
-  const user = auth0Context.user!;
-
-  console.log('User', user);
-
   useEffect(() => {
     socket.connect();
 

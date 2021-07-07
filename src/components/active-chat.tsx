@@ -66,7 +66,6 @@ function ActiveChatWrapper({ selectedUser }: ActiveChatWrapperProps) {
     socket.emit(SocketEvent.SELECTED_USER_MESSAGES, selectedUser);
 
     socket.on(SocketEvent.SELECTED_USER_MESSAGES, function (data) {
-      console.log('GET SELECTED USER MESSAGES', data);
       setMessages(data);
     });
 
