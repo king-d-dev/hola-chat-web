@@ -22,10 +22,17 @@ function ActiveChatWrapper({ selectedUser }: ActiveChatWrapperProps) {
     );
   });
 
+  function scrollToBottom(elementID: string) {
+    setTimeout(() => document.getElementById(elementID)?.scrollIntoView({ behavior: 'smooth' }), 5);
+  }
+
   function sendChat() {
+    const text = textFieldRef.current.value;
+    if (!text.trim()) return;
+
     const messageToSend: Message = {
       clientId: nanoid(),
-      text: textFieldRef.current.value,
+      text,
       sender: user.email!,
       recipient: selectedUser!.email,
       sentAt: new Date(),
@@ -35,18 +42,19 @@ function ActiveChatWrapper({ selectedUser }: ActiveChatWrapperProps) {
       console.log('Message has been sent to the socket server', ack);
     });
     addMessage(messageToSend);
+    scrollToBottom(messageToSend.clientId);
 
     textFieldRef.current.value = '';
   }
 
   useEffect(() => {
-    console.log('MMM', messages);
+    scrollToBottom('default-last-item');
   }, [messages]);
 
   useEffect(() => {
     socket.on(SocketEvent.MESSAGE, function (message: Message) {
-      console.log('Incoming message', message);
       addMessage(message);
+      scrollToBottom(message.clientId);
     });
 
     return () => {
@@ -70,10 +78,12 @@ function ActiveChatWrapper({ selectedUser }: ActiveChatWrapperProps) {
   return (
     <React.Fragment>
       {messages ? (
-        <div className="overflow-auto px-4 h-full flex flex-col pb-20">
+        <div className="messages overflow-auto px-4 h-full flex flex-col pb-20 pt-6">
           {Object.values(messages).map((msg) => (
             <ChatMessage key={msg.clientId} message={msg} />
           ))}
+
+          <div id="default-last-item"></div>
         </div>
       ) : (
         <div className="h-full flex justify-center items-center">

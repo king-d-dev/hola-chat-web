@@ -1,4 +1,5 @@
 import { SocketEvent, User } from '../types';
+import classnames from 'classnames';
 import userImage from '../assets/img/profile-user.png';
 import { useUsers } from '../stores/users';
 import { useEffect } from 'react';
@@ -10,12 +11,17 @@ type ListUserProps = {
 };
 
 function ListUserItem({ user }: ListUserProps) {
-  const { setSelectedUser } = useUsers();
+  const { setSelectedUser, selectedUser } = useUsers();
 
   return (
     <div
       onClick={() => setSelectedUser(user)}
-      className="flex items-center pb-3 mb-3 border-b border-gray-100 cursor-pointer"
+      className={classnames(
+        'list-user flex items-center pb-3 mb-3 border-b border-gray-100 cursor-pointer py-3 px-2',
+        {
+          active: selectedUser?.email === user.email,
+        }
+      )}
     >
       <img src={userImage} alt="user profile" className="w-5 mr-2" />
       <span className="overflow-ellipsis overflow-hidden">{user.email}</span>
@@ -57,7 +63,9 @@ function UserList() {
         </h1>
       </div>
 
-      <div className="py-3 px-2">
+      <div className="h-4"></div>
+
+      <div className="">
         {Object.values(users).map((user) => (
           <ListUserItem key={user.email} user={user} />
         ))}

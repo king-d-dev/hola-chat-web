@@ -14,6 +14,7 @@ function ChatMessage({ message }: ChatMessageProps) {
 
   return (
     <div
+      id={message.clientId}
       className={classnames(
         'chat-message bg-white text-black rounded-md max-w-sm w-auto px-3 py-1',
         { 'outgoing-message': isOutGoingMessage, 'bg-blue-400 text-white': isOutGoingMessage }

@@ -26,6 +26,14 @@ input:active {
   margin-bottom: 8px;
 }
 
+.chat-message:first-of-type {
+  margin-top: auto;
+}
+
 .outgoing-message {
   align-self: flex-end;
+}
+
+.list-user.active {
+  border-left: 2px solid #1f2937;
 }
