@@ -32,8 +32,7 @@ function ListUserItem({ user }: ListUserProps) {
 function UserList() {
   const auth0Context = useAuth0();
   const user = auth0Context.user!;
-  const { users, addUser, setUsers } = useUsers();
-  // const [users, setUsers] = useState<User[]>([]);
+  const { users, addUser, setUsers, removeUser } = useUsers();
 
   useEffect(() => {
     socket.on(SocketEvent.NEW_USER_CONNECTED, function (newUser: User) {
@@ -47,6 +46,12 @@ function UserList() {
       socket.off(SocketEvent.NEW_USER_CONNECTED);
     };
   }, [users, addUser, user]);
+
+  useEffect(() => {
+    socket.on(SocketEvent.USER_DISCONNECTED, function (disconnectedUser) {
+      removeUser(disconnectedUser.email);
+    });
+  }, [removeUser]);
 
   useEffect(() => {
     socket.on(SocketEvent.ACTIVE_USERS, function (activeUsers) {
