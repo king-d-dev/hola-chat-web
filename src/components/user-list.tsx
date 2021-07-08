@@ -67,7 +67,7 @@ function UserList() {
   }, [setUsers]);
 
   return (
-    <div className="overflow-auto h-full w-72 border-l ">
+    <div className="overflow-auto h-full w-64 border-l ">
       <div className="bg-gray-800">
         <h1 className="text-white text-sm p-4 text-center overflow-ellipsis overflow-hidden">
           {user.email}

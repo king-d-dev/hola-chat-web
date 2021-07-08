@@ -41,7 +41,7 @@ function Chat() {
 
   return (
     <div className="flex items-center justify-center bg-gray-50 h-screen m-auto">
-      <div className="w-8/12 bg-white h-full flex">
+      <div className=" bg-white h-full flex">
         <UserList />
         <ActiveChat />
       </div>

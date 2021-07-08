@@ -81,8 +81,8 @@ function ActiveChatWrapper({ selectedUser }: ActiveChatWrapperProps) {
   return (
     <React.Fragment>
       {messages ? (
-        <div className="messages-container overflow-auto relative w-full h-full">
-          <div className="flex justify-end bg-white p-2 border-r fixed">
+        <div className="messages-container overflow-auto relative w-96 h-full">
+          <div className="flex justify-end bg-white p-2 border-r w-96 fixed">
             <button onClick={blockUser} className="bg-red-500 rounded-md px-4 py-1 text-white">
               Block
             </button>
@@ -127,7 +127,7 @@ function ActiveChat() {
   const { selectedUser } = useUsers();
 
   return (
-    <div className="active-chat w-full relative">
+    <div className="active-chat w-96 relative">
       {selectedUser === null ? (
         <div className="h-full flex justify-center items-center">
           <h4 className="text-white">select a user to start chatting 💬 with.</h4>
