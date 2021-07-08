@@ -1,5 +1,5 @@
-const AUTH0_DOMAIN_NAME = process.env.REACT_APP_AUTH0_DOMAIN_NAME!;
-const AUTH0_CLIENT_ID = process.env.REACT_APP_AUTH0_CLIENT_ID!;
+const AUTH0_DOMAIN_NAME = 'dev-appoh.us.auth0.com';
+const AUTH0_CLIENT_ID = 'ABMIS1L5cahVgkVlnyHrQR6imMTdVj4J';
 const AUTH0_AUDIENCE = 'http://hola/api';
 const SOCKET_URL = 'http://localhost:5000';
 
