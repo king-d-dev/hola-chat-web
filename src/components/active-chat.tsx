@@ -1,5 +1,5 @@
 import { useAuth0 } from '@auth0/auth0-react';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { nanoid } from 'nanoid';
 import sendMessageImg from '../assets/img/email.png';
 import socket from '../lib/socket';
@@ -11,6 +11,7 @@ import { useUsers } from '../stores/users';
 type ActiveChatWrapperProps = { selectedUser: User };
 
 function ActiveChatWrapper({ selectedUser }: ActiveChatWrapperProps) {
+  const [blockBtnVissible, setBlockBtnVissible] = useState(true);
   const textFieldRef = useRef<HTMLInputElement>(null!);
   const auth0Context = useAuth0();
   const user = auth0Context.user!;
@@ -24,6 +25,7 @@ function ActiveChatWrapper({ selectedUser }: ActiveChatWrapperProps) {
 
   function blockUser() {
     socket.emit(SocketEvent.BLOCK_USER, selectedUser);
+    setBlockBtnVissible(true);
   }
 
   function scrollToBottom(elementID: string) {
@@ -81,16 +83,16 @@ function ActiveChatWrapper({ selectedUser }: ActiveChatWrapperProps) {
   return (
     <React.Fragment>
       {messages ? (
-        <div className="messages-container overflow-auto relative w-96 h-full">
-          <div className="flex justify-end bg-white p-2 border-r w-96 fixed">
-            <button onClick={blockUser} className="bg-red-500 rounded-md px-4 py-1 text-white">
-              Block
-            </button>
-          </div>
+        <div className="messages-container overflow-auto relative flex flex-col w-96 h-full">
+          {blockBtnVissible && (
+            <div className="flex justify-end bg-white p-2 border-r w-96 fixed">
+              <button onClick={blockUser} className="bg-red-500 rounded-md px-4 py-1 text-white">
+                Block
+              </button>
+            </div>
+          )}
 
-          <div className="h-20"></div>
-
-          <div className="messages px-4 flex flex-col pb-20 pt-6">
+          <div className="messages mt-auto px-4 flex flex-col pb-20 pt-20">
             {Object.values(messages).map((msg) => (
               <ChatMessage key={msg.clientId} message={msg} />
             ))}
