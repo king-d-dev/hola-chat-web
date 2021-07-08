@@ -25,7 +25,7 @@ function ActiveChatWrapper({ selectedUser }: ActiveChatWrapperProps) {
 
   function blockUser() {
     socket.emit(SocketEvent.BLOCK_USER, selectedUser);
-    setBlockBtnVissible(true);
+    setBlockBtnVissible(false);
   }
 
   function scrollToBottom(elementID: string) {
