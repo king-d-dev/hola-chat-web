@@ -6,7 +6,8 @@ import { useUsers } from '../stores/users';
 import { SocketEvent, User } from '../types';
 
 function Chat() {
-  const { addToBlackListers, removeBlackListersFromUsers, setBlackListers } = useUsers();
+  const { addToBlackListers, removeBlackListersFromUsers, setBlackListers, setBlackList } =
+    useUsers();
 
   // handle situation where this user is blocked by another user
   useEffect(() => {
@@ -29,7 +30,7 @@ function Chat() {
       console.log('BLACKLISTERSSSSS', list);
       setBlackListers(list);
 
-      // remove all my blacklisters from my users list
+      // remove all my blacklisters (those who have blocked me) from my users list
       removeBlackListersFromUsers();
     });
 
@@ -38,6 +39,21 @@ function Chat() {
       socket.off(SocketEvent.BLACK_LISTERS);
     };
   }, [setBlackListers, removeBlackListersFromUsers]);
+
+  useEffect(() => {
+    // load my blacklist on component mount
+    socket.emit(SocketEvent.BLACK_LIST);
+
+    socket.on(SocketEvent.BLACK_LIST, function (list: string[]) {
+      console.log('BLACK LISTTTTT', list);
+      setBlackList(list);
+    });
+
+    console.log('get blacklistttt');
+    return () => {
+      socket.off(SocketEvent.BLACK_LISTERS);
+    };
+  }, [setBlackList]);
 
   return (
     <div className="flex items-center justify-center bg-gray-50 h-screen m-auto">
