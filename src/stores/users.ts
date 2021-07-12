@@ -6,8 +6,10 @@ export type SelectedUser = User | null;
 type UsersState = {
   users: Record<string, User>;
   blacklisters: string[] /** list of people who have blocked this user */;
-  setBlackListers: (list: string[]) => void;
-  addToBlackListers: (user: User) => void;
+  setBlackListers: (list: string[]) => void /** This function initialises the list defined above */;
+  addToBlackListers: (
+    user: User
+  ) => void /** This function is for adding one user at a time to the blaclist */;
   removeBlackListersFromUsers: () => void /** This function removes those who have blacklisted this user from their list of users they can chat */;
   blacklist: string[] /** List of people this user has blocked */;
   setBlackList: (list: string[]) => void;

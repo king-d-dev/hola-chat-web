@@ -1,5 +1,5 @@
 import { useAuth0 } from '@auth0/auth0-react';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { nanoid } from 'nanoid';
 import sendMessageImg from '../assets/img/email.png';
 import socket from '../lib/socket';
@@ -16,9 +16,7 @@ function ActiveChatWrapper({ selectedUser }: ActiveChatWrapperProps) {
   const user = auth0Context.user!;
   const { blacklist } = useUsers();
   const { all, addMessage, setMessages } = useMessages();
-  const [canBlockSelectedUser, setCanBlockSelectedUser] = useState(
-    !blacklist.includes(selectedUser.email)
-  );
+  const selectedUserBlocked = blacklist.includes(selectedUser.email);
   const messages = Object.values(all).filter((msg) => {
     return (
       (msg.sender === selectedUser.email || msg.sender === user.email!) &&
@@ -27,10 +25,11 @@ function ActiveChatWrapper({ selectedUser }: ActiveChatWrapperProps) {
   });
 
   console.log('MY BLACK LIST', blacklist);
+  console.log('Can Block ?', blacklist.includes(selectedUser.email), selectedUserBlocked);
+  console.log('FFFF', selectedUser.email);
 
   function blockUser() {
     socket.emit(SocketEvent.BLOCK_USER, selectedUser);
-    setCanBlockSelectedUser(false);
   }
 
   function scrollToBottom(elementID: string) {
@@ -90,18 +89,18 @@ function ActiveChatWrapper({ selectedUser }: ActiveChatWrapperProps) {
       {messages ? (
         <div className="messages-container overflow-auto relative flex flex-col w-96 h-full">
           <div className="flex bg-white p-2 border-r w-96 fixed">
-            {canBlockSelectedUser ? (
+            {selectedUserBlocked ? (
+              <div className="flex w-full justify-between items-center">
+                <p className="text-xs">messages you send won't be received</p>
+                <p className="text-sm">BLOCKED</p>
+              </div>
+            ) : (
               <button
                 onClick={blockUser}
                 className="ml-auto bg-red-500 rounded-md px-4 py-1 text-white"
               >
                 Block
               </button>
-            ) : (
-              <div className="flex w-full justify-between items-center">
-                <p className="text-xs">messages you send won't be received</p>
-                <p className="text-sm">BLOCKED</p>
-              </div>
             )}
           </div>
 

@@ -6,8 +6,23 @@ import { useUsers } from '../stores/users';
 import { SocketEvent, User } from '../types';
 
 function Chat() {
-  const { addToBlackListers, removeBlackListersFromUsers, setBlackListers, setBlackList } =
-    useUsers();
+  const {
+    addToBlackListers,
+    removeBlackListersFromUsers,
+    setBlackListers,
+    setBlackList,
+    addToBlackList,
+  } = useUsers();
+
+  useEffect(() => {
+    socket.on(SocketEvent.BLOCK_USER, function (blockedUser) {
+      addToBlackList(blockedUser);
+    });
+
+    return () => {
+      socket.off(SocketEvent.BLOCK_USER);
+    };
+  }, [addToBlackList]);
 
   // handle situation where this user is blocked by another user
   useEffect(() => {
